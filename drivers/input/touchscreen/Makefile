@@ -93,6 +93,7 @@ obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
 obj-$(CONFIG_TOUCHSCREEN_LDCTC)		+= ldc_touch.o
 obj-$(CONFIG_TOUCHSCREEN_APS_MELFAS)	+= aps_ts.o
 obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
+<<<<<<< HEAD
 obj-$(CONFIG_TOUCHSCREEN_IST30XX)      += ist30xx.o
 obj-$(CONFIG_TOUCHSCREEN_IST30XX)      += ist30xx_factory.o
 obj-$(CONFIG_TOUCHSCREEN_IST30XX)      += ist30xx_misc.o
@@ -143,3 +144,4 @@ obj-$(CONFIG_TOUCHSCREEN_APS_MIT200_E2)		+= lge_ait_ts_mit200_E2.o
 obj-$(CONFIG_TOUCHSCREEN_LGE_AIT_TOUCHCORE)		+= lge_ait_ts_core.o
 obj-$(CONFIG_TOUCHSCREEN_LGE_AIT_MELFAS)		+= lge_ait_ts_melfas.o
 obj-$(CONFIG_TOUCHSCREEN_LGE_AIT_MELFAS)		+= lge_ait_ts_mit200.o
+obj-$(CONFIG_STATE_NOTIFIER)		+= state_notifier.o
