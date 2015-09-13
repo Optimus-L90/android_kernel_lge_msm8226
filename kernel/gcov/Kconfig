@@ -1,4 +1,4 @@
-depends on DEBUG_FS && !LTOmenu "GCOV-based kernel profiling"
+menu "GCOV-based kernel profiling"
 
 config GCOV_KERNEL
 	bool "Enable gcov-based kernel profiling"
