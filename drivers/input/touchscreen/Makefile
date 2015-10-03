@@ -93,7 +93,6 @@ obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
 obj-$(CONFIG_TOUCHSCREEN_LDCTC)		+= ldc_touch.o
 obj-$(CONFIG_TOUCHSCREEN_APS_MELFAS)	+= aps_ts.o
 obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
-<<<<<<< HEAD
 obj-$(CONFIG_TOUCHSCREEN_IST30XX)      += ist30xx.o
 obj-$(CONFIG_TOUCHSCREEN_IST30XX)      += ist30xx_factory.o
 obj-$(CONFIG_TOUCHSCREEN_IST30XX)      += ist30xx_misc.o
