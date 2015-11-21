@@ -245,8 +245,13 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS  := -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 -fno-unswitch-loops -fomit-frame-pointer -std=gnu99 -pipe
+HOSTCFLAGS  := -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 -fno-unswitch-loops -fomit-frame-pointer -std=gnu89 -pipe
 HOSTCXXFLAGS := -O3 -fno-unswitch-loops -pipe
+
+ifeq ($(shell $(HOSTCC) -v 2>&1 | grep -c "clang version"), 1)
+HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
+		-Wno-missing-field-initializers -fno-delete-null-pointer-checks
+endif
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -361,7 +366,7 @@ AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
 CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
-CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
+CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage -pipe
 
 
 # Use LINUXINCLUDE when you must reference the include/ directory.
@@ -372,30 +377,26 @@ LINUXINCLUDE    := -I$(srctree)/arch/$(hdr-arch)/include \
                    -include $(srctree)/include/linux/kconfig.h
 
 KBUILD_CPPFLAGS := -D__KERNEL__
-
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-			-fno-strict-aliasing -fno-common \
-			-Wno-implicit-function-declaration \
-			-Wno-format-security \
-			-fno-delete-null-pointer-checks \
-			-Wno-sequence-point \
-			-std=gnu89 \
-			-mvectorize-with-neon-quad \
-			-munaligned-access \
-			-ffast-math \
-			-march=armv7-a \
-			-mtune=cortex-a7 \
-			-mfpu=vfpv3 \
-			-mfloat-abi=softfp \
-			-pipe \
-			-w		   
-
+	   
+KBUILD_CFLAGS := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+		  -fno-strict-aliasing -fno-common \
+		  -Werror-implicit-function-declaration \
+		  -Wno-format-security \
+		  -std=gnu89 \
+		  -march=armv7-a \
+		  -mcpu=cortex-a7 \
+		  -mtune=cortex-a7 \
+		  -mfpu=vfpv4 \
+		  -mfloat-abi=hard \
+		  -mhard-float \
+		  -mtls-dialect=gnu2 \
+		  -pipe
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
-KBUILD_AFLAGS_MODULE  := -DMODULE
-KBUILD_CFLAGS_MODULE  := -DMODULE
+KBUILD_AFLAGS_MODULE  := -DMODULE -pipe
+KBUILD_CFLAGS_MODULE  := -DMODULE -pipe
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
@@ -580,10 +581,14 @@ endif # $(dot-config)
 # Defaults to vmlinux, but the arch makefile usually adds further targets
 all: vmlinux
 
+KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
+
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS	+= -Os -mthumb $(call cc-disable-warning,maybe-uninitialized,)
+LDFLAGS += -Os --as-needed --sort-common
 else
-KBUILD_CFLAGS	+= -O3 -fno-unswitch-loops -marm \
+LDFLAGS += -O2 --as-needed --sort-common
+KBUILD_CFLAGS	+= -O3 -fno-unswitch-loops -marm $(call cc-disable-warning,maybe-uninitialized,) \
 		  -ftree-vectorize \
 		  -fmodulo-sched \
 		  -fmodulo-sched-allow-regmoves \
@@ -597,12 +602,23 @@ KBUILD_CFLAGS	+= -O3 -fno-unswitch-loops -marm \
 		  -ftree-loop-im \
 		  -ftree-loop-ivcanon \
 		  -fivopts \
-		  -ffat-lto-objects \
 		  -ftree-coalesce-inlined-vars \
 		  -fweb \
+		  -flto \
+		  -ffat-lto-objects \
 		  -DNDEBUG \
 		  -fdevirtualize-speculatively \
-		  -fdevirtualize-at-ltrans
+		  -fdevirtualize-at-ltrans \
+		  -fgraphite \
+		  -floop-strip-mine \
+		  -floop-block \
+		  -fgraphite-identity \
+		  -ftree-loop-linear \
+		  -floop-interchange \
+		  -floop-parallelize-all \
+		  -ftree-parallelize-loops=4 \
+		  -fcx-limited-range \
+		  -fno-signed-zeros
 
 endif
 
