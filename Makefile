@@ -383,13 +383,13 @@ KBUILD_CFLAGS := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		  -Werror-implicit-function-declaration \
 		  -Wno-format-security \
 		  -std=gnu89 \
-		  -march=armv7-a \
 		  -mcpu=cortex-a7 \
 		  -mtune=cortex-a7 \
 		  -mfpu=vfpv4 \
 		  -mfloat-abi=hard \
 		  -mhard-float \
 		  -mtls-dialect=gnu2 \
+		  -w \
 		  -pipe
 
 KBUILD_AFLAGS_KERNEL :=
