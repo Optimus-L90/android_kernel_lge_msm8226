@@ -1425,6 +1425,7 @@ __releases(&info->lock)
 		goto out;
 	}
 	file->private_data = info;
+	info->file = file;
 	if (info->fbops->fb_open) {
 		res = info->fbops->fb_open(info,1);
 		if (res)
@@ -1449,6 +1450,7 @@ __releases(&info->lock)
 	struct fb_info * const info = file->private_data;
 
 	mutex_lock(&info->lock);
+	info->file = file;
 	if (info->fbops->fb_release)
 		info->fbops->fb_release(info,1);
 	module_put(info->fbops->owner);
@@ -1631,7 +1633,9 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	event.info = fb_info;
 	if (!lock_fb_info(fb_info))
 		return -ENODEV;
+	console_lock();
 	fb_notifier_call_chain(FB_EVENT_FB_REGISTERED, &event);
+	console_unlock();
 	unlock_fb_info(fb_info);
 	return 0;
 }
@@ -1647,8 +1651,10 @@ static int do_unregister_framebuffer(struct fb_info *fb_info)
 
 	if (!lock_fb_info(fb_info))
 		return -ENODEV;
+	console_lock();
 	event.info = fb_info;
 	ret = fb_notifier_call_chain(FB_EVENT_FB_UNBIND, &event);
+	console_unlock();
 	unlock_fb_info(fb_info);
 
 	if (ret)
@@ -1663,7 +1669,9 @@ static int do_unregister_framebuffer(struct fb_info *fb_info)
 	num_registered_fb--;
 	fb_cleanup_device(fb_info);
 	event.info = fb_info;
+	console_lock();
 	fb_notifier_call_chain(FB_EVENT_FB_UNREGISTERED, &event);
+	console_unlock();
 
 	/* this may free fb info */
 	put_fb_info(fb_info);
@@ -1834,11 +1842,8 @@ int fb_new_modelist(struct fb_info *info)
 	err = 1;
 
 	if (!list_empty(&info->modelist)) {
-		if (!lock_fb_info(info))
-			return -ENODEV;
 		event.info = info;
 		err = fb_notifier_call_chain(FB_EVENT_NEW_MODELIST, &event);
-		unlock_fb_info(info);
 	}
 
 	return err;
