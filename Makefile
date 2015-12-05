@@ -571,9 +571,6 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-<<<<<<< HEAD
-KBUILD_CFLAGS	+= -O2
-=======
 KBUILD_CFLAGS	+= -O3 -fno-unswitch-loops -marm \
 		  -ftree-vectorize \
 		  -fmodulo-sched \
@@ -594,8 +591,6 @@ KBUILD_CFLAGS	+= -O3 -fno-unswitch-loops -marm \
 		  -DNDEBUG \
 		  -fdevirtualize-speculatively \
 		  -fdevirtualize-at-ltrans
-
->>>>>>> 04d1e89... some LTO changes
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
