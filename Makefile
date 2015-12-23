@@ -389,7 +389,8 @@ KBUILD_CFLAGS := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		  -mfloat-abi=hard \
 		  -mhard-float \
 		  -mtls-dialect=gnu2 \
-		  -pipe
+		  -pipe \
+		  -w
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
